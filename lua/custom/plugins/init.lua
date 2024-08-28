@@ -3,18 +3,31 @@
 --
 -- See the kickstart.nvim README for more information
 return {
-  {
-    'mbbill/undotree',
-    cmd = 'UndotreeToggle', -- Load the plugin only when this command is used
-    config = function()
-      require('undotree').setup {
-        -- vim.api.nvim_set_keymap('n', '<leader>u', ':UndotreeToggle<CR>', { noremap = true, silent = true }),
-      }
-    end,
-  },
+  { 'nvim-treesitter/playground' },
+  { 'tpope/vim-fugitive' },
+  { 'mbbill/undotree' },
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
+  },
+  {
+    'github/copilot.vim',
+    config = function()
+      -- Optional: Configure Copilot settings here
+      vim.g.copilot_no_tab_map = true -- disable default <Tab> mapping
+      vim.api.nvim_set_keymap('i', '<C-J>', 'copilot#Accept("<CR>")', { silent = true, expr = true })
+    end,
+  },
+  { 'kablamo/vim-git-log' },
+  { 'ThePrimeagen/vim-be-good' },
+  { 'nvim-tree/nvim-tree.lua' },
+  {
+    'rbong/vim-flog',
+    lazy = true,
+    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
+    dependencies = {
+      'tpope/vim-fugitive',
+    },
   },
 }
