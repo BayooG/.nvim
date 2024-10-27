@@ -30,7 +30,11 @@ return {
       }
     end,
   },
-  -- {
+  { 'amadeus/vim-mjml' },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+  }, -- {
   --   'nvim-tree/nvim-tree.lua',
   --   version = '*',
   --   lazy = false,
@@ -41,4 +45,10 @@ return {
   --     require('nvim-tree').setup {}
   --   end,
   -- },
+  -- Snippet Engine
+  {
+    'hrsh7th/vim-vsnip',
+    event = 'InsertEnter',
+  },
+  { 'sindrets/diffview.nvim' },
 }

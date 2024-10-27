@@ -356,9 +356,36 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        --
+        defaults = {
+
+          -- preview = false, -- Disable preview to speed up results
+          find_command = { 'fd', '--type', 'f', '--hidden', '--follow', '--exclude', '.git', '*/static/*' },
+          file_ignore_patterns = { 'node_modules', '.git/', 'target/', 'build/' },
+          vimgrep_arguments = {
+            'rg',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+          },
+          layout_config = {
+            width = 0.75,
+            preview_cutoff = 100, -- Hide preview if the window is narrow
+          },
+          sorting_strategy = 'ascending',
+        },
+
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
+          },
+          fzf = {
+            fuzzy = true, -- Fuzzy matching
+            override_generic_sorter = true, -- Override default sorter
+            override_file_sorter = true, -- Override file sorter
+            case_mode = 'smart_case', -- Case-insensitive unless capital letter used
           },
         },
       }

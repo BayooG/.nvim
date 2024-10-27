@@ -33,6 +33,13 @@ vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find exis
 vim.keymap.set('n', '<leader>gf', builtin.git_files, { desc = '[G]it [F]ind' })
 vim.keymap.set('n', '<leader>gs', builtin.git_status, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>gc', builtin.git_commits, { noremap = true, silent = true })
+-- vim.keymap.set('n', '<leader>gc', builtin.git_commits, { noremap = true, silent = true })
+
+vim.keymap.set('n', '<leader>gc', function()
+  builtin.git_commits {
+    git_command = { 'git', 'log', '--pretty=%h %an %s' }, -- Commit hash, author, and message
+    prompt_title = 'Git Commits with Author',
+  }
+end, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>gg', builtin.git_stash, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>gh', ':lua TelescopeGitFileHistory()<CR>', { noremap = true, silent = true })
