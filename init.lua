@@ -1,3 +1,5 @@
+-- bayoog stuff
+require 'bayoog'
 --[[
 
 =====================================================================
@@ -256,6 +258,8 @@ require('lazy').setup({
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
 
+  -- { 'rescript-lang/vim-rescript', ft = 'rescript' },
+
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -385,9 +389,36 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        --
+        defaults = {
+
+          -- preview = false, -- Disable preview to speed up results
+          find_command = { 'fd', '--type', 'f', '--hidden', '--follow', '--exclude', '.git', '*/static/*' },
+          file_ignore_patterns = { 'node_modules', '.git/', 'target/', 'build/' },
+          vimgrep_arguments = {
+            'rg',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+          },
+          layout_config = {
+            width = 0.75,
+            preview_cutoff = 100, -- Hide preview if the window is narrow
+          },
+          sorting_strategy = 'ascending',
+        },
+
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
+          },
+          fzf = {
+            fuzzy = true, -- Fuzzy matching
+            override_generic_sorter = true, -- Override default sorter
+            override_file_sorter = true, -- Override file sorter
+            case_mode = 'smart_case', -- Case-insensitive unless capital letter used
           },
         },
       }
@@ -398,16 +429,6 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-      vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -564,6 +585,24 @@ require('lazy').setup({
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+            -- Utility function to handle backward compatibility
+            local function set_formatting_capability(client, value)
+              if client.server_capabilities then
+                client.server_capabilities.documentFormattingProvider = value
+              else
+                client.resolved_capabilities.document_formatting = value
+              end
+            end
+
+            -- Disable formatting for Ruff
+            if client.name == 'ruff_lsp' then
+              set_formatting_capability(client, false)
+            end
+
+            -- Enable formatting for Pyright
+            if client.name == 'pyright' then
+              set_formatting_capability(client, true)
+            end
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -645,8 +684,11 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
+        html = {},
+        ruff = {},
+        tailwindcss = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        -- pylsp = {}, -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -655,7 +697,6 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -809,6 +850,11 @@ require('lazy').setup({
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
         documentation = { auto_show = false, auto_show_delay_ms = 500 },
       },
+      -- If you prefer more traditional completion keymaps,
+      -- you can uncomment the following lines
+      -- ['<CR>'] = cmp.mapping.confirm { select = true },
+      -- ['<Tab>'] = cmp.mapping.select_next_item(),
+      -- ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
       sources = {
         default = { 'lsp', 'path', 'snippets', 'lazydev' },
@@ -941,7 +987,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!

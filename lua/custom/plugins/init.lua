@@ -2,4 +2,53 @@
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
-return {}
+return {
+  { 'nvim-treesitter/playground' },
+  { 'tpope/vim-fugitive' },
+  { 'mbbill/undotree' },
+  { 'nvim-treesitter/nvim-treesitter-context' },
+  { 'kablamo/vim-git-log' },
+  { 'ThePrimeagen/vim-be-good' },
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+  },
+  {
+    'rbong/vim-flog',
+    lazy = true,
+    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
+    dependencies = {
+      'tpope/vim-fugitive',
+    },
+  },
+  {
+    'roobert/tailwindcss-colorizer-cmp.nvim',
+    config = function()
+      require('tailwindcss-colorizer-cmp').setup {
+        color_square_width = 2,
+      }
+    end,
+  },
+  { 'amadeus/vim-mjml' },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+  }, -- {
+  --   'nvim-tree/nvim-tree.lua',
+  --   version = '*',
+  --   lazy = false,
+  --   dependencies = {
+  --     'nvim-tree/nvim-web-devicons',
+  --   },
+  --   config = function()
+  --     require('nvim-tree').setup {}
+  --   end,
+  -- },
+  -- Snippet Engine
+  {
+    'hrsh7th/vim-vsnip',
+    event = 'InsertEnter',
+  },
+  { 'sindrets/diffview.nvim' },
+}
