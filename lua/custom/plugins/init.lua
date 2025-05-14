@@ -3,6 +3,7 @@
 --
 -- See the kickstart.nvim README for more information
 return {
+  require('custom.plugins.mason'),
   { 'nvim-treesitter/playground' },
   { 'tpope/vim-fugitive' },
   { 'mbbill/undotree' },
