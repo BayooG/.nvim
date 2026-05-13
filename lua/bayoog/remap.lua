@@ -19,6 +19,10 @@ vim.keymap.set('n', '<leader>tp', ':TSPlaygroundToggle<CR>', { noremap = true, s
 
 vim.keymap.set('n', '<leader>tp', ':TSPlaygroundToggle<CR>', { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>cp', function()
-  vim.fn.setreg('+', vim.fn.expand '%:p')
-end, { desc = 'Copy current file path to clipboard' })
+vim.keymap.set('n', '<leader>ce', function()
+  vim.fn.setreg('+', vim.fn.expand '%:t')
+end, { desc = 'Copy current file name to clipboard' })
+
+vim.keymap.set('n', '<leader>cr', function()
+  vim.fn.setreg('+', vim.fn.expand '%')
+end, { desc = 'Copy relative file path to clipboard' })
