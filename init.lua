@@ -520,20 +520,6 @@ require('lazy').setup({
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-            -- Utility function to handle backward compatibility
-            local function set_formatting_capability(client, value)
-              if client.server_capabilities then
-                client.server_capabilities.documentFormattingProvider = value
-              else
-                client.resolved_capabilities.document_formatting = value
-              end
-            end
-
-            -- Disable formatting for Ruff
-            if client.name == 'ruff' then
-              set_formatting_capability(client, false)
-            end
-
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -675,11 +661,18 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { 'isort', 'ruff' },
+        -- Mirror `make format-python`: ruff check --fix, then ruff format.
+        python = { 'ruff_fix', 'ruff_format' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      },
+      -- Run ruff via `uv run` so it uses the project's pinned ruff (and its
+      -- pyproject.toml config) instead of the older Mason-installed binary.
+      -- This keeps format-on-save byte-identical to `make format-python`.
+      formatters = {
+        ruff_fix = { command = 'uv', prepend_args = { 'run', 'ruff' } },
+        ruff_format = { command = 'uv', prepend_args = { 'run', 'ruff' } },
       },
     },
   },
